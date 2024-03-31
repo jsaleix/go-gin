@@ -14,6 +14,8 @@ type Event struct {
 	TotalClients  map[chan string]bool
 }
 
+var Stream *Event
+
 func (stream *Event) listen() {
 	for {
 		select {
@@ -44,6 +46,7 @@ func NewServer() (event *Event) {
 
 	go event.listen()
 
+	Stream = event
 	return
 }
 
@@ -76,8 +79,8 @@ func headersMiddleware() gin.HandlerFunc {
 	}
 }
 
-func InitRoute(router *gin.Engine, stream *Event) {
-	router.GET("/stream", headersMiddleware(), stream.ServeHTTP(), func(c *gin.Context) {
+func InitRoute(router *gin.Engine) {
+	router.GET("/stream", headersMiddleware(), Stream.ServeHTTP(), func(c *gin.Context) {
 		v, ok := c.Get("clientChan")
 		if !ok {
 			return

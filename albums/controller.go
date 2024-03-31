@@ -9,8 +9,7 @@ import (
 
 var Stream *sse.Event
 
-func AffectRoutes(r *gin.Engine, s *sse.Event) {
-	Stream = s
+func AffectRoutes(r *gin.Engine) {
 	r.GET("/albums", getAll)
 	r.GET("/albums/:id", getOne)
 	r.POST("/albums", createOne)
@@ -42,6 +41,6 @@ func createOne(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, nil)
 	} else {
 		c.IndentedJSON(http.StatusCreated, res)
-		Stream.Message <- "OK"
+		sse.Stream.Message <- "OK"
 	}
 }

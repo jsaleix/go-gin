@@ -28,8 +28,8 @@ func main() {
 		}
 	}()
 
-	routes.AffectRoutes(router, stream)
-	sse.InitRoute(router, stream)
+	routes.AffectRoutes(router)
+	sse.InitRoute(router)
 
 	if err := router.Run(":" + config.PORT); err != nil {
 		log.Panicf("error: %s", err)
