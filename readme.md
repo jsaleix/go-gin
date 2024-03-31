@@ -1,5 +1,5 @@
 # go gin
-Project to practise and familiarise with Golang and the Gin Web Framework.
+Project to practice and familiarise with Golang and the Gin Web Framework.
 Also implementing Server-sent-events.
 
 ## Requirements
@@ -10,5 +10,7 @@ Also implementing Server-sent-events.
 
 Run the following command:
 ```
-go get . && go run .
+cp .env.example .env 
+go get . 
+go run . 
 ```
