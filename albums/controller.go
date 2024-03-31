@@ -10,9 +10,10 @@ import (
 var Stream *sse.Event
 
 func AffectRoutes(r *gin.Engine) {
-	r.GET("/albums", getAll)
-	r.GET("/albums/:id", getOne)
-	r.POST("/albums", createOne)
+	group := r.Group("/albums")
+	group.GET("", getAll)
+	group.GET("/:id", getOne)
+	group.POST("", createOne)
 }
 
 func getAll(c *gin.Context) {
