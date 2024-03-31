@@ -2,11 +2,15 @@ package albums
 
 import (
 	"net/http"
+	"sse/sse"
 
 	"github.com/gin-gonic/gin"
 )
 
-func AffectRoutes(r *gin.Engine) {
+var Stream *sse.Event
+
+func AffectRoutes(r *gin.Engine, s *sse.Event) {
+	Stream = s
 	r.GET("/albums", getAll)
 	r.GET("/albums/:id", getOne)
 	r.POST("/albums", createOne)
@@ -38,5 +42,6 @@ func createOne(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, nil)
 	} else {
 		c.IndentedJSON(http.StatusCreated, res)
+		Stream.Message <- "OK"
 	}
 }

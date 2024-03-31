@@ -1,6 +1,7 @@
-package main
+package sse
 
 import (
+	"io"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -46,7 +47,7 @@ func NewServer() (event *Event) {
 	return
 }
 
-func (stream *Event) serveHTTP() gin.HandlerFunc {
+func (stream *Event) ServeHTTP() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Initialize client channel
 		clientChan := make(ClientChan)
@@ -65,7 +66,7 @@ func (stream *Event) serveHTTP() gin.HandlerFunc {
 	}
 }
 
-func HeadersMiddleware() gin.HandlerFunc {
+func headersMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Content-Type", "text/event-stream")
 		c.Writer.Header().Set("Cache-Control", "no-cache")
@@ -73,4 +74,25 @@ func HeadersMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Transfer-Encoding", "chunked")
 		c.Next()
 	}
+}
+
+func InitRoute(router *gin.Engine, stream *Event) {
+	router.GET("/stream", headersMiddleware(), stream.ServeHTTP(), func(c *gin.Context) {
+		v, ok := c.Get("clientChan")
+		if !ok {
+			return
+		}
+		clientChan, ok := v.(ClientChan)
+		if !ok {
+			return
+		}
+		c.Stream(func(w io.Writer) bool {
+			// Stream message to client from message channel
+			if msg, ok := <-clientChan; ok {
+				c.SSEvent("message", msg)
+				return true
+			}
+			return false
+		})
+	})
 }

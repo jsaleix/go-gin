@@ -2,19 +2,16 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"sse/routes"
+	"sse/sse"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-var stream *Event
-var router *gin.Engine
-
 func main() {
-	router = gin.Default()
-	stream = NewServer()
+	router := gin.Default()
+	stream := sse.NewServer()
 
 	go func() {
 		for {
@@ -27,26 +24,8 @@ func main() {
 		}
 	}()
 
-	routes.AffectRoutes(router)
-
-	router.GET("/stream", HeadersMiddleware(), stream.serveHTTP(), func(c *gin.Context) {
-		v, ok := c.Get("clientChan")
-		if !ok {
-			return
-		}
-		clientChan, ok := v.(ClientChan)
-		if !ok {
-			return
-		}
-		c.Stream(func(w io.Writer) bool {
-			// Stream message to client from message channel
-			if msg, ok := <-clientChan; ok {
-				c.SSEvent("message", msg)
-				return true
-			}
-			return false
-		})
-	})
+	routes.AffectRoutes(router, stream)
+	sse.InitRoute(router, stream)
 
 	router.Run("localhost:8080")
 }
