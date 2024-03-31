@@ -35,11 +35,12 @@ func getOne(c *gin.Context) {
 func createOne(c *gin.Context) {
 	var dto CreateAlbumDto
 	if err := c.BindJSON(&dto); err != nil {
-		c.IndentedJSON(http.StatusBadRequest, nil)
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err})
+		return
 	}
 	res, ok := postAlbums(dto)
 	if !ok {
-		c.IndentedJSON(http.StatusBadRequest, nil)
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid data"})
 	} else {
 		c.IndentedJSON(http.StatusCreated, res)
 		sse.Stream.Message <- "OK"
