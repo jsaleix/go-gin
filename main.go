@@ -1,9 +1,9 @@
 package main
 
 import (
+	"api/routes"
+	"api/sse"
 	"fmt"
-	"sse/routes"
-	"sse/sse"
 	"time"
 
 	"github.com/gin-gonic/gin"

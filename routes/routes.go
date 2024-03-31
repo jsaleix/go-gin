@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"sse/albums"
-	"sse/sse"
+	"api/albums"
+	"api/sse"
 
 	"github.com/gin-gonic/gin"
 )

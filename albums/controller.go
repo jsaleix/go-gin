@@ -1,8 +1,8 @@
 package albums
 
 import (
+	"api/sse"
 	"net/http"
-	"sse/sse"
 
 	"github.com/gin-gonic/gin"
 )
