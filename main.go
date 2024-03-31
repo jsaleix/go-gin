@@ -4,6 +4,8 @@ import (
 	"api/routes"
 	"api/sse"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -27,5 +29,11 @@ func main() {
 	routes.AffectRoutes(router, stream)
 	sse.InitRoute(router, stream)
 
-	router.Run("localhost:8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	if err := router.Run(":" + port); err != nil {
+		log.Panicf("error: %s", err)
+	}
 }
