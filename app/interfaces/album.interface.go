@@ -10,6 +10,7 @@ import (
 type AlbumRepository interface {
 	FindById(ctx context.Context, id string) (*types.Album, bool)
 	FindMany(ctx context.Context) ([]types.Album, bool)
+	Create(ctx context.Context, dto types.CreateAlbumDto) (types.Album, bool)
 }
 
 type AlbumController interface {

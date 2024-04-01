@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"api/repositories"
+	"api/interfaces"
 	"api/types"
 	"context"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 )
 
 type AlbumController struct {
-	Repository repositories.AlbumRepository
+	Repository interfaces.AlbumRepository
 }
 
 func (ctrller AlbumController) GetAll(c *gin.Context) {
