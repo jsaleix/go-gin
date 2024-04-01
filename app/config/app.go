@@ -12,6 +12,7 @@ const (
 )
 
 var PORT string = DEFAULT_PORT
+var DB_URL string
 
 func Init() {
 	godotenv.Load(".env")
@@ -21,5 +22,8 @@ func Init() {
 	}
 	if os.Getenv("PORT") != "" {
 		PORT = os.Getenv("PORT")
+	}
+	if os.Getenv("DB_URL") != "" {
+		DB_URL = os.Getenv("DB_URL")
 	}
 }

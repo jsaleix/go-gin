@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/config"
+	"api/db"
 	"api/routes"
 	"api/sse"
 	"fmt"
@@ -13,7 +14,7 @@ import (
 
 func main() {
 	config.Init()
-
+	db.Init()
 	router := gin.Default()
 	stream := sse.NewServer()
 
