@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"api/models"
 	"api/types"
 	"context"
 
@@ -12,18 +13,18 @@ type AlbumRepository struct {
 	Client *mongo.Client
 }
 
-func (r AlbumRepository) FindById(ctx context.Context, id string) (re *types.Album, ok bool) {
-	return &types.Album{}, false
+func (r AlbumRepository) FindById(ctx context.Context, id string) (re *models.Album, ok bool) {
+	return &models.Album{}, false
 }
 
-func (r AlbumRepository) FindMany(ctx context.Context) (re []types.Album, ok bool) {
-	var res []types.Album
+func (r AlbumRepository) FindMany(ctx context.Context) (re []models.Album, ok bool) {
+	var res []models.Album
 	db := r.Client
 	col := db.Database("app").Collection("albums")
 	filter := bson.D{}
 	cursor, err := col.Find(ctx, filter)
 	if err != nil {
-		return []types.Album{}, false
+		return []models.Album{}, false
 	}
 	if err = cursor.All(ctx, &res); err != nil {
 		panic(err)
@@ -31,15 +32,15 @@ func (r AlbumRepository) FindMany(ctx context.Context) (re []types.Album, ok boo
 	return res, true
 }
 
-func (r AlbumRepository) Create(ctx context.Context, data types.CreateAlbumDto) (response types.Album, ok bool) {
-	var newAlbum types.Album
+func (r AlbumRepository) Create(ctx context.Context, data types.CreateAlbumDto) (response models.Album, ok bool) {
+	var newAlbum models.Album
 	db := r.Client
 
 	if data.Title == "" || data.Artist == "" {
 		return newAlbum, false
 	} else {
 		col := db.Database("app").Collection("albums")
-		newAlbum = types.Album{Title: data.Title, Artist: data.Artist, Price: data.Price}
+		newAlbum = models.Album{Title: data.Title, Artist: data.Artist, Price: data.Price}
 		_, err := col.InsertOne(ctx, newAlbum)
 		if err != nil {
 			return newAlbum, false

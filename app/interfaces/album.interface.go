@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"api/models"
 	"api/types"
 	"context"
 
@@ -8,9 +9,9 @@ import (
 )
 
 type AlbumRepository interface {
-	FindById(ctx context.Context, id string) (*types.Album, bool)
-	FindMany(ctx context.Context) ([]types.Album, bool)
-	Create(ctx context.Context, dto types.CreateAlbumDto) (types.Album, bool)
+	FindById(ctx context.Context, id string) (*models.Album, bool)
+	FindMany(ctx context.Context) ([]models.Album, bool)
+	Create(ctx context.Context, dto types.CreateAlbumDto) (models.Album, bool)
 }
 
 type AlbumController interface {

@@ -18,6 +18,8 @@ func main() {
 	router := gin.Default()
 	stream := sse.NewServer()
 
+	router.Use(gin.Logger())
+
 	go func() {
 		for {
 			time.Sleep(time.Second * 10)
