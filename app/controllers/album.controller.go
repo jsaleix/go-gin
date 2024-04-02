@@ -11,7 +11,7 @@ import (
 )
 
 type AlbumController struct {
-	Repository interfaces.AlbumRepository
+	Repository interfaces.AlbumRepositoryI
 }
 
 func (ctrller AlbumController) GetAll(c *gin.Context) {

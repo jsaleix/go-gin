@@ -1,9 +1,9 @@
 package repositories
 
 import (
+	"api/models"
 	"context"
 
-	"github.com/golangcompany/JWT-Authentication/models"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -15,11 +15,11 @@ func (r UserRepository) FindById(ctx context.Context, id string) (res models.Use
 	return models.User{}, false
 }
 
-func (r UserRepository) findBy(_ context.Context, _ map[string]string) (res models.User, ok bool) {
+func (r UserRepository) FindBy(_ context.Context, _ map[string]string) (res models.User, ok bool) {
 	return models.User{}, false
 }
 
-func (r UserRepository) FindMany(ctx context.Context) (res []models.User, ok bool) {
+func (r UserRepository) FindAll(ctx context.Context) (res []models.User, ok bool) {
 	return []models.User{}, false
 }
 
