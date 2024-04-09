@@ -72,7 +72,7 @@ func (ctrller UserController) GetUsers(c *gin.Context) {
 	defer cancel()
 	res, ok := ctrller.Repository.FindAll(ctx)
 	if !ok {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "No album found"})
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "No user found"})
 	} else {
 		c.IndentedJSON(http.StatusOK, res)
 	}
