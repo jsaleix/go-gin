@@ -11,7 +11,7 @@ type UserRepositoryI interface {
 	FindById(context.Context, string) (models.User, bool)
 	FindBy(context.Context, map[string]string) (models.User, bool)
 	FindAll(context.Context) ([]models.User, bool)
-	Create(context.Context, any) (models.User, bool)
+	Create(context.Context, any) bool
 }
 
 type UserControllerI interface {
