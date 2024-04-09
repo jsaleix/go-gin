@@ -13,6 +13,8 @@ const (
 
 var PORT string = DEFAULT_PORT
 var DB_URL string
+var DB_NAME string = "app"
+var SECRET string = "secret"
 
 func Init() {
 	godotenv.Load(".env")
