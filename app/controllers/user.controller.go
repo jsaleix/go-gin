@@ -49,11 +49,10 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 	user.Token = &token
 	user.Refresh_token = &refreshToken
 
-	if userCreated := ctrller.Repository.Create(ctx, user); userCreated != true {
+	if userCreated := ctrller.Repository.Create(ctx, user); !userCreated {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not create user"})
 	} else {
-		// c.Status(http.StatusCreated)
-		c.IndentedJSON(http.StatusCreated, user)
+		c.Status(http.StatusCreated)
 	}
 
 }
@@ -88,7 +87,7 @@ func (ctrller UserController) Login(c *gin.Context) {
 		return
 	}
 
-	token, refreshToken, _ := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.User_type, *&foundUser.User_id)
+	token, refreshToken, _ := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.User_type, foundUser.User_id)
 	foundUser.Token = &token
 	foundUser.Refresh_token = &refreshToken
 	foundUser.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
@@ -105,7 +104,6 @@ func (ctrller UserController) Login(c *gin.Context) {
 	loginResponse.Token = foundUser.Token
 	loginResponse.User_type = foundUser.User_type
 	loginResponse.Refresh_token = foundUser.Refresh_token
-	loginResponse.Created_at = foundUser.Created_at
 	loginResponse.Updated_at = foundUser.Updated_at
 
 	c.JSON(http.StatusOK, loginResponse)
