@@ -12,6 +12,7 @@ type UserRepositoryI interface {
 	FindBy(context.Context, map[string]string) (models.User, bool)
 	FindAll(context.Context) ([]models.User, bool)
 	Create(context.Context, models.User) bool
+	UpdateOne(context.Context, string, models.User) (models.User, bool)
 }
 
 type UserControllerI interface {

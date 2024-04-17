@@ -21,7 +21,8 @@ func HashPassword(password string) string {
 }
 
 func VerifyPassword(userPassword string, providedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(userPassword))
+	err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(providedPassword))
+	log.Printf("a %s -- b %s, res %t", userPassword, providedPassword, err == nil)
 	return err == nil
 }
 
@@ -56,4 +57,9 @@ func GenerateAllTokens(email string, userType string, uid string) (token string,
 	}
 
 	return token, refreshToken, err
+}
+
+func UpdateAllTokens(signedToken string, signRefreshToken string, userId string) {
+	// var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+
 }

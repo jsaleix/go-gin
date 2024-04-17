@@ -6,6 +6,7 @@ import (
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -14,7 +15,13 @@ type UserRepository struct {
 }
 
 func (r UserRepository) FindById(ctx context.Context, id string) (res models.User, ok bool) {
-	return models.User{}, false
+	col := r.Client.Database(config.DB_NAME).Collection("users")
+	err := col.FindOne(ctx, bson.D{{"user_id", id}})
+	if err != nil {
+		return res, false
+	} else {
+		return res, true
+	}
 }
 
 func (r UserRepository) FindBy(ctx context.Context, filters map[string]string) (res models.User, ok bool) {
@@ -46,4 +53,17 @@ func (r UserRepository) Create(ctx context.Context, user models.User) bool {
 	col := r.Client.Database(config.DB_NAME).Collection("users")
 	_, errs := col.InsertOne(ctx, user)
 	return errs == nil
+}
+
+func (r UserRepository) UpdateOne(ctx context.Context, id string, data models.User) (user models.User, ok bool) {
+	db := r.Client.Database(config.DB_NAME).Collection("users")
+	var updateObj primitive.D
+	updateObj = append(updateObj, primitive.E{Key: "$set", Value: data})
+	filter := bson.M{"user_id": id}
+	// err := db.FindOneAndUpdate(ctx, filter, updateObj, &opt).Decode(&user)
+	err := db.FindOneAndUpdate(ctx, filter, updateObj).Decode(&user)
+	if err != nil {
+		return user, false
+	}
+	return user, true
 }

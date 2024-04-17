@@ -4,6 +4,7 @@ import (
 	"api/helpers"
 	"api/interfaces"
 	"api/models"
+	"api/types"
 	"context"
 	"net/http"
 	"time"
@@ -33,7 +34,7 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 
 	_, accountExists := ctrller.Repository.FindBy(ctx, map[string]string{"email": *user.Email})
 	if accountExists {
-		c.JSON(http.StatusNotFound, gin.H{"error": "account already existing"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not create user"})
 		return
 	}
 
@@ -43,20 +44,71 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 	user.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	user.ID = primitive.NewObjectID()
 	user.User_id = user.ID.Hex()
-	token, refreshToken, _ := helpers.GenerateAllTokens(*user.Email, *user.User_type, *&user.User_id)
+	*user.User_type = "ADMIN"
+	token, refreshToken, _ := helpers.GenerateAllTokens(*user.Email, *user.User_type, user.User_id)
 	user.Token = &token
 	user.Refresh_token = &refreshToken
 
 	if userCreated := ctrller.Repository.Create(ctx, user); userCreated != true {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not create user"})
 	} else {
-		c.Status(http.StatusCreated)
+		// c.Status(http.StatusCreated)
+		c.IndentedJSON(http.StatusCreated, user)
 	}
 
 }
 
 func (ctrller UserController) Login(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "Not implemented yet"})
+
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	var req types.AuthDto
+	var foundUser models.User
+	defer cancel()
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	foundUser, ok := ctrller.Repository.FindBy(ctx, map[string]string{"email": req.Email})
+	defer cancel()
+
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
+		return
+	}
+
+	if passwordIsValid := helpers.VerifyPassword(*foundUser.Password, req.Password); !passwordIsValid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
+		return
+	}
+
+	if foundUser.Email == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
+		return
+	}
+
+	token, refreshToken, _ := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.User_type, *&foundUser.User_id)
+	foundUser.Token = &token
+	foundUser.Refresh_token = &refreshToken
+	foundUser.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+
+	if _, ok := ctrller.Repository.UpdateOne(ctx, foundUser.User_id, foundUser); !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
+		return
+	}
+
+	var loginResponse types.LoginResponse
+	loginResponse.ID = foundUser.ID
+	loginResponse.User_id = foundUser.User_id
+	loginResponse.Email = foundUser.Email
+	loginResponse.Token = foundUser.Token
+	loginResponse.User_type = foundUser.User_type
+	loginResponse.Refresh_token = foundUser.Refresh_token
+	loginResponse.Created_at = foundUser.Created_at
+	loginResponse.Updated_at = foundUser.Updated_at
+
+	c.JSON(http.StatusOK, loginResponse)
 }
 
 func (ctrller UserController) GetSelf(c *gin.Context) {
