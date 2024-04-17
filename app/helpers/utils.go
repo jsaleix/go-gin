@@ -59,7 +59,32 @@ func GenerateAllTokens(email string, userType string, uid string) (token string,
 	return token, refreshToken, err
 }
 
-func UpdateAllTokens(signedToken string, signRefreshToken string, userId string) {
-	// var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+func ValidateToken(signedToken string) (claims *SignDetails, msg string) {
+	token, err := jwt.ParseWithClaims(
+		signedToken,
+		&SignDetails{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(config.SECRET), nil
+		},
+	)
+
+	if err != nil {
+		msg = err.Error()
+		return
+	}
+
+	claims, ok := token.Claims.(*SignDetails)
+
+	if !ok {
+		msg = "Token is invalid"
+		return
+	}
+
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		msg = "Token has expired"
+		return
+	}
+
+	return claims, msg
 
 }
