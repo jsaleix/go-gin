@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"api/config"
 	"api/helpers"
 	"net/http"
 
@@ -32,7 +33,7 @@ func Authenticate() gin.HandlerFunc {
 func IsAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userType := c.GetString("user_type")
-		if userType != "ADMIN" {
+		if userType != config.ADMIN_ROLE {
 			c.JSON(403, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return

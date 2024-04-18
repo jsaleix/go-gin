@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api/config"
 	"api/helpers"
 	"api/interfaces"
 	"api/models"
@@ -47,7 +48,7 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 	user.ID = primitive.NewObjectID()
 	user.User_id = user.ID.Hex()
 	user.User_type = new(string)
-	*user.User_type = "USER"
+	*user.User_type = config.USER_ROLE
 	token, refreshToken, _ := helpers.GenerateAllTokens(*user.Email, *user.User_type, user.User_id)
 	user.Token = &token
 	user.Refresh_token = &refreshToken
