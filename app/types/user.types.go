@@ -6,9 +6,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type AuthDto struct {
+type LoginDto struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type SignUpDto struct {
+	Email    string `json:"email" validate:"email,required"`
+	Password string `json:"password" validate:"required,min=6"`
 }
 
 type LoginResponse struct {

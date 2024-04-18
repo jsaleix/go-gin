@@ -19,35 +19,43 @@ type UserController struct {
 
 func (ctrller UserController) SignUp(c *gin.Context) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	var user models.User
+	var req types.SignUpDto
 	defer cancel()
 
-	if err := c.BindJSON(&user); err != nil {
+	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	validationErr := helpers.Validate.Struct(user)
+	validationErr := helpers.Validate.Struct(req)
 	if validationErr != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
 		return
 	}
 
-	_, accountExists := ctrller.Repository.FindBy(ctx, map[string]string{"email": *user.Email})
+	_, accountExists := ctrller.Repository.FindBy(ctx, map[string]string{"email": req.Email})
 	if accountExists {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not create user"})
 		return
 	}
 
-	password := helpers.HashPassword(*user.Password)
+	password := helpers.HashPassword(req.Password)
+	user := models.User{}
+	user.Email = &req.Email
 	user.Password = &password
 	user.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	user.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	user.ID = primitive.NewObjectID()
 	user.User_id = user.ID.Hex()
-	*user.User_type = "ADMIN"
+	user.User_type = new(string)
+	*user.User_type = "USER"
 	token, refreshToken, _ := helpers.GenerateAllTokens(*user.Email, *user.User_type, user.User_id)
 	user.Token = &token
 	user.Refresh_token = &refreshToken
+
+	if validationErr := helpers.Validate.Struct(req); validationErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+		return
+	}
 
 	if userCreated := ctrller.Repository.Create(ctx, user); !userCreated {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not create user"})
@@ -60,7 +68,7 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 func (ctrller UserController) Login(c *gin.Context) {
 
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
-	var req types.AuthDto
+	var req types.LoginDto
 	var foundUser models.User
 	defer cancel()
 
