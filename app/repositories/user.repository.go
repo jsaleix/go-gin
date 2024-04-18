@@ -16,7 +16,7 @@ type UserRepository struct {
 
 func (r UserRepository) FindById(ctx context.Context, id string) (res models.User, ok bool) {
 	col := r.Client.Database(config.DB_NAME).Collection("users")
-	err := col.FindOne(ctx, bson.D{{"user_id", id}})
+	err := col.FindOne(ctx, bson.D{{"user_id", id}}).Decode(&res)
 	if err != nil {
 		return res, false
 	} else {

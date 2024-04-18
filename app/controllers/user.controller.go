@@ -118,11 +118,40 @@ func (ctrller UserController) Login(c *gin.Context) {
 }
 
 func (ctrller UserController) GetSelf(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "Not implemented yet"})
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	userId := c.GetString("uid")
+
+	if userId == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid user id"})
+		return
+	}
+	user, ok := ctrller.Repository.FindById(ctx, userId)
+	if !ok {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "No user found"})
+		return
+	}
+
+	res := types.ConvertToPublicUser(&user)
+	c.IndentedJSON(http.StatusOK, res)
 }
 
 func (ctrller UserController) GetUser(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, gin.H{"message": "Not implemented yet"})
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	id := c.Param("id")
+	if id == "" {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid user id"})
+		return
+	}
+	user, ok := ctrller.Repository.FindById(ctx, id)
+	if !ok {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "No user found"})
+	}
+
+	res := types.ConvertToPublicUser(&user)
+	c.IndentedJSON(http.StatusOK, res)
+
 }
 
 func (ctrller UserController) GetUsers(c *gin.Context) {
