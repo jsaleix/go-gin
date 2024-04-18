@@ -16,7 +16,7 @@ type UserRepository struct {
 
 func (r UserRepository) FindById(ctx context.Context, id string) (res models.User, ok bool) {
 	col := r.Client.Database(config.DB_NAME).Collection("users")
-	err := col.FindOne(ctx, bson.D{{"user_id", id}}).Decode(&res)
+	err := col.FindOne(ctx, bson.D{{Key: "user_id", Value: id}}).Decode(&res)
 	if err != nil {
 		return res, false
 	} else {
@@ -60,7 +60,6 @@ func (r UserRepository) UpdateOne(ctx context.Context, id string, data models.Us
 	var updateObj primitive.D
 	updateObj = append(updateObj, primitive.E{Key: "$set", Value: data})
 	filter := bson.M{"user_id": id}
-	// err := db.FindOneAndUpdate(ctx, filter, updateObj, &opt).Decode(&user)
 	err := db.FindOneAndUpdate(ctx, filter, updateObj).Decode(&user)
 	if err != nil {
 		return user, false
