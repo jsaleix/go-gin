@@ -14,5 +14,4 @@ func main() {
 	SeedUsers(db.Client)
 
 	log.Print("Seed completed")
-
 }
