@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"api/models"
+	"api/types"
 	"context"
 
 	"github.com/gin-gonic/gin"
@@ -21,4 +22,9 @@ type UserControllerI interface {
 	GetSelf(*gin.Context)
 	GetUser(*gin.Context)
 	GetUsers(*gin.Context)
+}
+
+type UserServiceI interface {
+	CreateUser(types.SignUpDto, string) (models.User, error)
+	LogUser(models.User) (types.LoginResponse, bool)
 }

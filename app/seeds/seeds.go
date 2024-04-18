@@ -8,6 +8,8 @@ import (
 
 var users = []string{"user@user.com", "admin@admin.com"}
 
+// var password = "User123"
+
 func main() {
 	log.Print("Starting...")
 	config.Init()

@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserController struct {
 	Repository interfaces.UserRepositoryI
+	Service    interfaces.UserServiceI
 }
 
 func (ctrller UserController) SignUp(c *gin.Context) {
@@ -39,27 +39,10 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 		return
 	}
 
-	password := helpers.HashPassword(req.Password)
-	user := models.User{}
-	user.Email = &req.Email
-	user.Password = &password
-	user.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-	user.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-	user.ID = primitive.NewObjectID()
-	user.User_id = user.ID.Hex()
-	user.User_type = new(string)
-	*user.User_type = config.USER_ROLE
-	token, refreshToken, _ := helpers.GenerateAllTokens(*user.Email, *user.User_type, user.User_id)
-	user.Token = &token
-	user.Refresh_token = &refreshToken
-
-	if validationErr := helpers.Validate.Struct(req); validationErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+	_, err := ctrller.Service.CreateUser(req, config.USER_ROLE)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}
-
-	if userCreated := ctrller.Repository.Create(ctx, user); !userCreated {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not create user"})
 	} else {
 		c.Status(http.StatusCreated)
 	}
@@ -86,36 +69,24 @@ func (ctrller UserController) Login(c *gin.Context) {
 		return
 	}
 
-	if passwordIsValid := helpers.VerifyPassword(*foundUser.Password, req.Password); !passwordIsValid {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
-		return
-	}
-
+	// I'm a bit paranoid
 	if foundUser.Email == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
 		return
 	}
 
-	token, refreshToken, _ := helpers.GenerateAllTokens(*foundUser.Email, *foundUser.User_type, foundUser.User_id)
-	foundUser.Token = &token
-	foundUser.Refresh_token = &refreshToken
-	foundUser.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-
-	if _, ok := ctrller.Repository.UpdateOne(ctx, foundUser.User_id, foundUser); !ok {
+	if passwordIsValid := helpers.VerifyPassword(*foundUser.Password, req.Password); !passwordIsValid {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email or password"})
 		return
 	}
 
-	var loginResponse types.LoginResponse
-	loginResponse.ID = foundUser.ID
-	loginResponse.User_id = foundUser.User_id
-	loginResponse.Email = foundUser.Email
-	loginResponse.Token = foundUser.Token
-	loginResponse.User_type = foundUser.User_type
-	loginResponse.Refresh_token = foundUser.Refresh_token
-	loginResponse.Updated_at = foundUser.Updated_at
+	response, ok := ctrller.Service.LogUser(foundUser)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not create user"})
+		return
+	}
 
-	c.JSON(http.StatusOK, loginResponse)
+	c.JSON(http.StatusOK, response)
 }
 
 func (ctrller UserController) GetSelf(c *gin.Context) {
@@ -148,6 +119,7 @@ func (ctrller UserController) GetUser(c *gin.Context) {
 	user, ok := ctrller.Repository.FindById(ctx, id)
 	if !ok {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "No user found"})
+		return
 	}
 
 	res := types.ConvertToPublicUser(&user)

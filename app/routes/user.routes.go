@@ -5,13 +5,15 @@ import (
 	"api/db"
 	"api/middlewares"
 	"api/repositories"
+	"api/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 func affectUsersRoutes(r *gin.Engine) {
 	repository := repositories.UserRepository{Client: db.Client}
-	controller := controllers.UserController{Repository: repository}
+	service := services.UserService{Repository: repository}
+	controller := controllers.UserController{Repository: repository, Service: service}
 
 	authRoutes := r.Group("/auth")
 	authRoutes.POST("/login", controller.Login)
