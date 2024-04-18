@@ -51,6 +51,9 @@ func (r UserRepository) FindAll(ctx context.Context) (res []models.User, ok bool
 
 func (r UserRepository) Create(ctx context.Context, user models.User) bool {
 	col := r.Client.Database(config.DB_NAME).Collection("users")
+	if _, err := col.Indexes().CreateOne(ctx, models.EmailIndex); err != nil {
+		return false
+	}
 	_, errs := col.InsertOne(ctx, user)
 	return errs == nil
 }

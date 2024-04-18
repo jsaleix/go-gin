@@ -31,7 +31,7 @@ func (service UserService) CreateUser(createUserDto types.SignUpDto, role string
 	user.ID = primitive.NewObjectID()
 	user.User_id = user.ID.Hex()
 	user.User_type = new(string)
-	*user.User_type = config.USER_ROLE
+	*user.User_type = role
 
 	if validationErr := helpers.Validate.Struct(user); validationErr != nil {
 		return user, validationErr

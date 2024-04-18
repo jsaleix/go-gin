@@ -3,20 +3,50 @@ package main
 import (
 	"api/config"
 	"api/db"
+	"api/repositories"
+	"api/services"
+	"api/types"
 	"log"
 )
 
-var users = []string{"user@user.com", "admin@admin.com"}
+type UserToCreate struct {
+	Mail     string
+	Role     string
+	Password string
+}
 
-// var password = "User123"
+// var users = []string{"user@user.com", "admin@admin.com"}
+
+var users = []UserToCreate{
+	{
+		Mail:     "user@user.com",
+		Role:     config.USER_ROLE,
+		Password: "User123",
+	},
+	{
+		Mail:     "admin@admin.com",
+		Role:     config.ADMIN_ROLE,
+		Password: "Admin123",
+	},
+}
 
 func main() {
 	log.Print("Starting...")
 	config.Init()
 	db.Init()
 
-	for _, mail := range users {
-		log.Printf("Creating user with email: %s", mail)
+	repository := repositories.UserRepository{Client: db.Client}
+	service := services.UserService{Repository: repository}
+	for _, user := range users {
+		log.Printf("Creating user with email: %s", user.Mail)
+		dto := types.SignUpDto{Email: user.Mail, Password: user.Password}
+		_, err := service.CreateUser(dto, user.Role)
+		if err != nil {
+			log.Printf("Error creating user: %s", err.Error())
+		} else {
+			log.Printf("User created")
+		}
 	}
+	log.Print("Seed completed")
 
 }
