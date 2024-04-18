@@ -28,3 +28,15 @@ func Authenticate() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func IsAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userType := c.GetString("user_type")
+		if userType != "ADMIN" {
+			c.JSON(403, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

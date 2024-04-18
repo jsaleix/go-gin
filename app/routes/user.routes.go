@@ -20,7 +20,7 @@ func affectUsersRoutes(r *gin.Engine) {
 	userRoutes := r.Group("/users")
 	userRoutes.Use(middlewares.Authenticate())
 	userRoutes.GET("/self", controller.GetSelf)
-	userRoutes.GET("/all", controller.GetUsers)
-	userRoutes.GET("/:id", controller.GetUser)
+	userRoutes.GET("/all", middlewares.IsAdmin(), controller.GetUsers)
+	userRoutes.GET("/:id", middlewares.IsAdmin(), controller.GetUser)
 
 }
