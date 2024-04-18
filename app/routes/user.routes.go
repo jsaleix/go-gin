@@ -21,5 +21,6 @@ func affectUsersRoutes(r *gin.Engine) {
 	userRoutes.Use(middlewares.Authenticate())
 	userRoutes.GET("/self", controller.GetSelf)
 	userRoutes.GET("/all", controller.GetUsers)
+	userRoutes.GET("/:id", controller.GetUser)
 
 }
