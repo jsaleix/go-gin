@@ -11,3 +11,6 @@ seeds:
 
 help:
 	@echo "make test: run the tests"
+	@echo "make start: run the application"
+	@echo "make seeds: run the seeds"
+	@echo "make help: show this message"
