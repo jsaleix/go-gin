@@ -9,6 +9,9 @@ jobs:
     run-tests:
         name: "Test app on push"
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: app
         steps:
             - uses: actions/checkout@v4
             - name: Setup Go
