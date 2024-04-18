@@ -3,7 +3,10 @@ package models
 import (
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type User struct {
@@ -16,4 +19,9 @@ type User struct {
 	Created_at    time.Time          `json:"created_at"`
 	Updated_at    time.Time          `json:"updated_at"`
 	User_id       string             `json:"user_id"`
+}
+
+var EmailIndex = mongo.IndexModel{
+	Keys:    bson.M{"email": 1},
+	Options: options.Index().SetUnique(true),
 }

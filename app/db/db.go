@@ -32,5 +32,6 @@ func Init() {
 	if client != nil {
 		Client = client
 	}
+
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 }

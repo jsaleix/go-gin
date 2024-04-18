@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"api/config"
 	"api/models"
 	"api/types"
 	"context"
@@ -20,7 +21,7 @@ func (r AlbumRepository) FindById(ctx context.Context, id string) (re *models.Al
 func (r AlbumRepository) FindMany(ctx context.Context) (re []models.Album, ok bool) {
 	var res []models.Album
 	db := r.Client
-	col := db.Database("app").Collection("albums")
+	col := db.Database(config.DB_NAME).Collection("albums")
 	filter := bson.D{}
 	cursor, err := col.Find(ctx, filter)
 	if err != nil {
@@ -39,7 +40,7 @@ func (r AlbumRepository) Create(ctx context.Context, data types.CreateAlbumDto) 
 	if data.Title == "" || data.Artist == "" {
 		return newAlbum, false
 	} else {
-		col := db.Database("app").Collection("albums")
+		col := db.Database(config.DB_NAME).Collection("albums")
 		newAlbum = models.Album{Title: data.Title, Artist: data.Artist, Price: data.Price}
 		_, err := col.InsertOne(ctx, newAlbum)
 		if err != nil {

@@ -11,7 +11,7 @@ import (
 func TestInterfaceImplem(t *testing.T) {
 	implem := UserRepository{}
 
-	var _ interfaces.UserRepositoryI = &implem
+	// var _ interfaces.UserRepositoryI = &implem
 
 	if _, ok := interface{}(&implem).(interfaces.UserRepositoryI); !ok {
 		t.Errorf("UserRepository does not implement interfaces.UserRepositoryI interface")
