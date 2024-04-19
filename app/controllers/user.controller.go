@@ -19,7 +19,7 @@ type UserController struct {
 }
 
 // SignUp
-// @Summary SignUp
+// @Summary Allows a user to sign up
 // @Produce json
 // @Param body body types.SignUpDto true "Email and password"
 // @Router /auth/signup [post]
@@ -58,7 +58,7 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 }
 
 // Login
-// @Summary Login
+// @Summary Allows a user to login
 // @Produce json
 // @Param body body types.LoginDto true "Email and password"
 // @Router /auth/login [post]
@@ -105,6 +105,13 @@ func (ctrller UserController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// GetSelf
+// @Summary Allows a user to get their own details
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Router /users/self [get]
+// @Success 200 {object} types.UserPublic
+// @Tags users
 func (ctrller UserController) GetSelf(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -124,6 +131,14 @@ func (ctrller UserController) GetSelf(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, res)
 }
 
+// GetUser
+// @Summary Allows an admin to get a user's details
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Param id path string true "User ID"
+// @Router /users/{id} [get]
+// @Success 200 {object} types.UserPublic
+// @Tags users
 func (ctrller UserController) GetUser(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -143,6 +158,13 @@ func (ctrller UserController) GetUser(c *gin.Context) {
 
 }
 
+// GetUsers
+// @Summary Allows an admin to get all users
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Router /users/all [get]
+// @Success 200 {object} types.UserPublic[]
+// @Tags users
 func (ctrller UserController) GetUsers(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

@@ -39,6 +39,24 @@ definitions:
     - email
     - password
     type: object
+  types.UserPublic:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      user_type:
+        type: string
+    required:
+    - email
+    - user_type
+    type: object
 info:
   contact: {}
 paths:
@@ -60,7 +78,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/types.LoginResponse'
-      summary: Login
+      summary: Allows a user to login
       tags:
       - auth
   /auth/signup:
@@ -79,7 +97,66 @@ paths:
       responses:
         "201":
           description: Created
-      summary: SignUp
+      summary: Allows a user to sign up
       tags:
       - auth
+  /users/{id}:
+    get:
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserPublic'
+      summary: Allows an admin to get a user's details
+      tags:
+      - users
+  /users/all:
+    get:
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserPublic'
+      summary: Allows an admin to get all users
+      tags:
+      - users
+  /users/self:
+    get:
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserPublic'
+      summary: Allows a user to get their own details
+      tags:
+      - users
 swagger: "2.0"
