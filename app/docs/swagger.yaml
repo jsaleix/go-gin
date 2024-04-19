@@ -1,0 +1,55 @@
+definitions:
+  types.LoginDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  types.LoginResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      refresh_token:
+        type: string
+      token:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      user_type:
+        type: string
+    required:
+    - email
+    - user_type
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Email and password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.LoginResponse'
+      summary: Login
+      tags:
+      - auth
+swagger: "2.0"

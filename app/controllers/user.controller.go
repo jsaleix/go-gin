@@ -49,6 +49,15 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 
 }
 
+// Login
+// @Summary Login
+// @Schemes
+// @Produce json
+// @Param body body types.LoginDto true "Email and password"
+// @Router /auth/login [post]
+// @Success 200 {object} types.LoginResponse
+// @Accept json
+// @Tags auth
 func (ctrller UserController) Login(c *gin.Context) {
 
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)

@@ -9,6 +9,11 @@ import (
 	"log"
 	"time"
 
+	"api/docs"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +22,7 @@ func main() {
 	db.Init()
 	router := gin.Default()
 	stream := sse.NewServer()
+	docs.SwaggerInfo.BasePath = "/"
 
 	router.Use(gin.Logger())
 
@@ -33,6 +39,7 @@ func main() {
 
 	routes.AffectRoutes(router)
 	sse.InitRoute(router)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	if err := router.Run(":" + config.PORT); err != nil {
 		log.Panicf("error: %s", err)
