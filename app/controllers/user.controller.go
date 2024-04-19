@@ -18,6 +18,14 @@ type UserController struct {
 	Service    interfaces.UserServiceI
 }
 
+// SignUp
+// @Summary SignUp
+// @Produce json
+// @Param body body types.SignUpDto true "Email and password"
+// @Router /auth/signup [post]
+// @Success 201
+// @Accept json
+// @Tags auth
 func (ctrller UserController) SignUp(c *gin.Context) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 	var req types.SignUpDto
@@ -51,7 +59,6 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 
 // Login
 // @Summary Login
-// @Schemes
 // @Produce json
 // @Param body body types.LoginDto true "Email and password"
 // @Router /auth/login [post]

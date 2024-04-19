@@ -28,6 +28,17 @@ definitions:
     - email
     - user_type
     type: object
+  types.SignUpDto:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
 info:
   contact: {}
 paths:
@@ -50,6 +61,25 @@ paths:
           schema:
             $ref: '#/definitions/types.LoginResponse'
       summary: Login
+      tags:
+      - auth
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Email and password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.SignUpDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+      summary: SignUp
       tags:
       - auth
 swagger: "2.0"

@@ -47,6 +47,36 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/auth/signup": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "SignUp",
+                "parameters": [
+                    {
+                        "description": "Email and password",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SignUpDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -91,6 +121,22 @@ const docTemplate = `{
                 },
                 "user_type": {
                     "type": "string"
+                }
+            }
+        },
+        "types.SignUpDto": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
                 }
             }
         }

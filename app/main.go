@@ -22,7 +22,6 @@ func main() {
 	db.Init()
 	router := gin.Default()
 	stream := sse.NewServer()
-	docs.SwaggerInfo.BasePath = "/"
 
 	router.Use(gin.Logger())
 
@@ -39,7 +38,12 @@ func main() {
 
 	routes.AffectRoutes(router)
 	sse.InitRoute(router)
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	// Swagger is not enabled in release mode
+	if config.GIN_MODE != "release" {
+		docs.SwaggerInfo.BasePath = "/"
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	}
 
 	if err := router.Run(":" + config.PORT); err != nil {
 		log.Panicf("error: %s", err)

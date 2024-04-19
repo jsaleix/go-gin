@@ -15,6 +15,7 @@ var PORT string = DEFAULT_PORT
 var DB_URL string
 var DB_NAME string = "app"
 var SECRET string = "secret"
+var GIN_MODE string = "debug"
 
 func Init() {
 	godotenv.Load(".env")
@@ -27,5 +28,8 @@ func Init() {
 	}
 	if os.Getenv("DB_URL") != "" {
 		DB_URL = os.Getenv("DB_URL")
+	}
+	if os.Getenv("GIN_MODE") != "" {
+		GIN_MODE = os.Getenv("GIN_MODE")
 	}
 }
