@@ -9,6 +9,11 @@ import (
 	"log"
 	"time"
 
+	"api/docs"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,6 +38,12 @@ func main() {
 
 	routes.AffectRoutes(router)
 	sse.InitRoute(router)
+
+	// Swagger is not enabled in release mode
+	if config.GIN_MODE != "release" {
+		docs.SwaggerInfo.BasePath = "/"
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	}
 
 	if err := router.Run(":" + config.PORT); err != nil {
 		log.Panicf("error: %s", err)

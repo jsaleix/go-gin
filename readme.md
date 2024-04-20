@@ -45,3 +45,11 @@ This will create two user accounts:
 | --------------- | ---------- | ----- |
 | user@user.com   | User123+=  | USER  |
 | admin@admin.com | Admin123+= | ADMIN |
+
+## Routes documentation
+
+You can use Swagger to display and try all available routes, along with the corresponding parameters and response format. The url should be http://localhost:3000/swagger/index.html unless you've changed the default port or you set the GIN_MODE to "release".
+
+The library used to do this is [gin-swagger](https://github.com/swaggo/gin-swagger).
+
+Note: to update swagger you'll have to run in /app `swag init`.
