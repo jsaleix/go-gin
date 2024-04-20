@@ -22,6 +22,8 @@ func affectUsersRoutes(r *gin.Engine) {
 	userRoutes := r.Group("/users")
 	userRoutes.Use(middlewares.Authenticate())
 	userRoutes.GET("/self", controller.GetSelf)
+	userRoutes.PATCH("/self/profile", controller.UpdateProfile)
+	userRoutes.PATCH("/self/password", controller.UpdatePassword)
 	userRoutes.GET("/all", middlewares.IsAdmin(), controller.GetUsers)
 	userRoutes.GET("/:id", middlewares.IsAdmin(), controller.GetUser)
 

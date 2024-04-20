@@ -47,3 +47,11 @@ func ConvertToPublicUser(user *models.User) *UserPublic {
 		User_id:    user.User_id,
 	}
 }
+
+type UpdateUserDto struct {
+	Email *string `json:"email" validate:"email,required"`
+}
+
+type UpdatePasswordDto struct {
+	Password string `json:"password" validate:"required,min=6"`
+}

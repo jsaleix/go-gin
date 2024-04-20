@@ -33,6 +33,7 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	validationErr := helpers.Validate.Struct(req)
@@ -174,4 +175,78 @@ func (ctrller UserController) GetUsers(c *gin.Context) {
 	} else {
 		c.IndentedJSON(http.StatusOK, res)
 	}
+}
+
+// UpdateProfile
+// @Summary Allows a user to update their profile
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Param body body types.UpdateUserDto true "User details"
+// @Router /users/self/profile [patch]
+// @Success 200
+// @Accept json
+// @Tags users
+func (ctrller UserController) UpdateProfile(c *gin.Context) {
+	userId := c.GetString("uid")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing user id"})
+		return
+	}
+
+	var req types.UpdateUserDto
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validationErr := helpers.Validate.Struct(req)
+	if validationErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+		return
+	}
+
+	if !ctrller.Service.UpdateProfile(req, userId) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not update user"})
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+// UpdateProfile
+// @Summary Allows a user to update their password
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Param body body types.UpdatePasswordDto true "User details"
+// @Router /users/self/password [patch]
+// @Success 200
+// @Accept json
+// @Tags users
+func (ctrller UserController) UpdatePassword(c *gin.Context) {
+	userId := c.GetString("uid")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing user id"})
+		return
+	}
+
+	var req types.UpdatePasswordDto
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validationErr := helpers.Validate.Struct(req)
+	if validationErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+		return
+	}
+
+	if !ctrller.Service.UpdatePassword(req, userId) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not update user"})
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
