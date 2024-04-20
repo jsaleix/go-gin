@@ -177,6 +177,15 @@ func (ctrller UserController) GetUsers(c *gin.Context) {
 	}
 }
 
+// UpdateProfile
+// @Summary Allows a user to update their profile
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Param body body types.UpdateUserDto true "User details"
+// @Router /users/self/profile [patch]
+// @Success 200
+// @Accept json
+// @Tags users
 func (ctrller UserController) UpdateProfile(c *gin.Context) {
 	userId := c.GetString("uid")
 	if userId == "" {
@@ -205,6 +214,15 @@ func (ctrller UserController) UpdateProfile(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// UpdateProfile
+// @Summary Allows a user to update their password
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Param body body types.UpdatePasswordDto true "User details"
+// @Router /users/self/password [patch]
+// @Success 200
+// @Accept json
+// @Tags users
 func (ctrller UserController) UpdatePassword(c *gin.Context) {
 	userId := c.GetString("uid")
 	if userId == "" {
