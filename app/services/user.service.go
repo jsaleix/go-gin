@@ -69,3 +69,36 @@ func (service UserService) LogUser(user models.User) (res types.LoginResponse, o
 
 	return loginResponse, true
 }
+
+func (service UserService) UpdateProfile(updateUserDto types.UpdateUserDto, userId string) bool {
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	user, ok := service.Repository.FindById(ctx, userId)
+	if !ok {
+		return false
+	}
+
+	user.Email = updateUserDto.Email
+	user.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	if _, ok := service.Repository.UpdateOne(ctx, userId, user); !ok {
+		return false
+	}
+	return true
+}
+
+func (service UserService) UpdatePassword(updatePasswordDto types.UpdatePasswordDto, userId string) bool {
+	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	user, ok := service.Repository.FindById(ctx, userId)
+	if !ok {
+		return false
+	}
+
+	hashedPassword := helpers.HashPassword(updatePasswordDto.Password)
+	user.Password = &hashedPassword
+	user.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	if _, ok := service.Repository.UpdateOne(ctx, userId, user); !ok {
+		return false
+	}
+	return true
+}

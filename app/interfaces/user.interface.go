@@ -22,9 +22,13 @@ type UserControllerI interface {
 	GetSelf(*gin.Context)
 	GetUser(*gin.Context)
 	GetUsers(*gin.Context)
+	UpdateProfile(*gin.Context)
+	UpdatePassword(*gin.Context)
 }
 
 type UserServiceI interface {
 	CreateUser(types.SignUpDto, string) (models.User, error)
 	LogUser(models.User) (types.LoginResponse, bool)
+	UpdateProfile(types.UpdateUserDto, string) bool
+	UpdatePassword(types.UpdatePasswordDto, string) bool
 }

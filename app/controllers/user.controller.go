@@ -33,6 +33,7 @@ func (ctrller UserController) SignUp(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	validationErr := helpers.Validate.Struct(req)
@@ -174,4 +175,60 @@ func (ctrller UserController) GetUsers(c *gin.Context) {
 	} else {
 		c.IndentedJSON(http.StatusOK, res)
 	}
+}
+
+func (ctrller UserController) UpdateProfile(c *gin.Context) {
+	userId := c.GetString("uid")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing user id"})
+		return
+	}
+
+	var req types.UpdateUserDto
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validationErr := helpers.Validate.Struct(req)
+	if validationErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+		return
+	}
+
+	if !ctrller.Service.UpdateProfile(req, userId) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not update user"})
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (ctrller UserController) UpdatePassword(c *gin.Context) {
+	userId := c.GetString("uid")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing user id"})
+		return
+	}
+
+	var req types.UpdatePasswordDto
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	validationErr := helpers.Validate.Struct(req)
+	if validationErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+		return
+	}
+
+	if !ctrller.Service.UpdatePassword(req, userId) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "An error occurred, could not update user"})
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
